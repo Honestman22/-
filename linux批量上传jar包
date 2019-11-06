@@ -1,0 +1,53 @@
+批量上传Maven仓库jar包到Nexus3.x私服批量上传Maven仓库jar包到Nexus3.x私服
+
+作者：不会飞的小龙人
+时间：2019/07/31 16:30
+标签：NexusMaven
+手动mvn命令上传单个Jar 
+
+mvn deploy:deploy-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=10.2.0.1.0 -Dpackaging=jar -Dfile=D:\\ojdbc6.jar -Durl=http://ip:8081/repository/maven-releases/ -DrepositoryId=nexus
+ 
+
+批量上传maven仓库所有jar包
+
+1.先将本地maven/repository仓库打一个完整的zip压缩包
+
+2.上传到linux目录，如：/opt
+
+3.解压repository.zip
+
+4.进入repository目录
+
+5.创建touch mavenimport.sh脚本，写入以下内容；
+
+#!/bin/bash
+# copy and run this script to the root of the repository directory containing files
+# this script attempts to exclude uploading itself explicitly so the script name is important
+# Get command line params
+
+while getopts ":r:u:p:" opt; do
+	case $opt in
+		r) REPO_URL="$OPTARG"
+		;;
+		u) USERNAME="$OPTARG"
+		;;
+		p) PASSWORD="$OPTARG"
+		;;
+	esac
+done
+
+find . -type f -not -path './mavenimport\.sh*' -not -path '*/\.*' -not -path '*/\^archetype\-catalog\.xml*' -not -path '*/\^maven\-metadata\-local*\.xml' -not -path '*/\^maven\-metadata\-deployment*\.xml' | sed "s|^\./||" | xargs -I '{}' curl -u "$USERNAME:$PASSWORD" -X PUT -v -T {} ${REPO_URL}/{} ;
+6.输入chmod a+x mavenimport.sh进行可执行授权
+
+7.执行导入命令 
+
+./mavenimport.sh -u admin -p admin123 -r http://ip:8081/repository/maven-releases/
+8.等待全部导入完毕后，在Nexus上刷新即可看到已导入的jar
+
+
+
+Nexus3界面上传jar包
+
+
+
+ 
