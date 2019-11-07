@@ -1,0 +1,90 @@
+首先在私服创建第三方的库，3rd-part，hosted类型
+
+用脚本批量上传jar包到私服的3rd-part库里
+
+在maven-public的库里添加3rd-part为member
+
+配置好引用依赖的setting文件
+
+ <?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+ <localRepository>E:\Users\win7\Desktop\repository2</localRepository>
+
+  <servers>
+	<server>
+      <id>c</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server> 
+    <server>
+      <id>maven-releases</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server> 
+	<server>
+      <id>maven-public</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>	
+	<server>
+      <id>3rd-part</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>	
+  </servers>
+  <mirrors>
+    <mirror>
+        <id>maven-public</id>
+        <mirrorOf>*</mirrorOf>
+        <url>http://172.21.85.50:8081/repository/maven-public/</url>
+     </mirror>
+  </mirrors>
+  <profiles>
+	<profile>
+		<id>jdk-1.8</id>
+		<activation>
+			<activeByDefault>true</activeByDefault>
+			<jdk>1.8</jdk>
+		</activation>
+		<properties>
+			<maven.compiler.source>1.8</maven.compiler.source>
+			<maven.compiler.target>1.8</maven.compiler.target>
+			<maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+		</properties>
+	</profile>
+	  	<profile>
+  		<id>3rd-part</id>
+  		<repositories>
+  			<repository>
+  				 <id>3rd-part</id>
+  				<name>3rd-part</name>
+  				<url>http://172.21.85.50:8081/repository/3rd-part/</url>
+  				<snapshots>
+  					<enabled>true</enabled>
+  					<updatePolicy>always</updatePolicy>
+  					<checksumPolicy>warn</checksumPolicy>
+  				</snapshots>
+  			</repository>
+  		</repositories>
+  		<pluginRepositories>
+  			<pluginRepository>
+  				 <id>3rd-part</id>
+  				<name>3rd-part</name>
+  				<url>http://172.21.85.50:8081/repository/3rd-part/</url>
+  				<snapshots>
+  					<enabled>true</enabled>
+  					<updatePolicy>always</updatePolicy>
+  					<checksumPolicy>warn</checksumPolicy>
+  				</snapshots>
+  			</pluginRepository>
+  		</pluginRepositories>
+  	</profile>
+  </profiles>
+  <activeProfiles>
+  	<activeProfile>3rd-part</activeProfile>
+	<activeProfile>jdk-1.8</activeProfile>
+  </activeProfiles>
+</settings>
+
